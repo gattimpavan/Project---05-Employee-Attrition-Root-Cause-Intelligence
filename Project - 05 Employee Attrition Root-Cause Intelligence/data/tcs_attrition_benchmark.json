@@ -1,0 +1,14 @@
+{
+    "organization": "Tata Consultancy Services (TCS)",
+    "total_workforce_records": 15000,
+    "total_attrition_count": 2793,
+    "overall_attrition_rate_pct": 18.62,
+    "average_tenure_years": 4.82,
+    "total_annual_replacement_loss_cr": 218.89,
+    "high_risk_headcount": 1076,
+    "average_weekly_hours": 45.8,
+    "overtime_headcount_pct": 12.5,
+    "underpaid_below_market_pct": 9.1,
+    "promotion_stagnant_pct": 19.4,
+    "burnout_at_risk_pct": 2.7
+}

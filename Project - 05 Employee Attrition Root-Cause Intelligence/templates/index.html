@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project - 05: Employee Attrition Root-Cause Intelligence | Tata Consultancy Services</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="brand-wrapper">
+                <div class="tcs-logo-badge">TATA</div>
+                <div class="title-meta">
+                    <h1>Project - 05: Employee Attrition Root-Cause Intelligence</h1>
+                    <p>Tata Consultancy Services (TCS) Workforce Analytics & Prescriptive Retention AI System</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <span class="card-badge" id="model-auc-badge">XGBoost ROC-AUC: 0.83</span>
+                <span class="card-badge" id="model-acc-badge">Accuracy: 81%</span>
+                <a href="/download_report" class="btn btn-emerald">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+                    Download Executive PDF Report
+                </a>
+            </div>
+        </header>
+
+        <!-- Problem Statement Banner -->
+        <div class="card" style="margin-bottom: 24px; background: rgba(30, 41, 59, 0.45); border-left: 4px solid var(--accent-cyan);">
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-cyan); font-weight: 700; margin-bottom: 4px;">
+                Problem Statement
+            </div>
+            <p style="font-size: 0.95rem; color: #e2e8f0; font-style: italic;">
+                "In <b>TATA CONSULTANCY SERVICES</b> Employee turnover has increased significantly, creating recruitment costs and operational disruption. Develop an AI system that integrates employee performance, workload, compensation, absenteeism, overtime, engagement and training data to identify organizational factors associated with attrition and recommend evidence-based retention interventions."
+            </p>
+        </div>
+
+        <!-- Top Executive KPI Grid -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Total Workforce Monitored</div>
+                <div class="kpi-value" id="kpi-headcount">15,000</div>
+                <div class="kpi-sub">Active IT Professional Profiles</div>
+            </div>
+            <div class="kpi-card crimson">
+                <div class="kpi-label">Observed Attrition Rate</div>
+                <div class="kpi-value" id="kpi-attrition-rate">18.6%</div>
+                <div class="kpi-sub" style="color: #f87171;">Above 12% Target Benchmark</div>
+            </div>
+            <div class="kpi-card crimson">
+                <div class="kpi-label">Annual Turnover Loss</div>
+                <div class="kpi-value" id="kpi-loss-cr">₹388.4 Cr</div>
+                <div class="kpi-sub">Recruitment & Disruption Costs</div>
+            </div>
+            <div class="kpi-card amber">
+                <div class="kpi-label">High-Risk Talent Cohort</div>
+                <div class="kpi-value" id="kpi-at-risk">2,740</div>
+                <div class="kpi-sub">Hazard Probability ≥ 55%</div>
+            </div>
+            <div class="kpi-card emerald">
+                <div class="kpi-label">Net Retention Savings</div>
+                <div class="kpi-value" id="kpi-savings-cr">₹186.4 Cr</div>
+                <div class="kpi-sub" style="color: #34d399;">Preventable Cost of Departure</div>
+            </div>
+            <div class="kpi-card purple">
+                <div class="kpi-label">Portfolio Retention ROI</div>
+                <div class="kpi-value" id="kpi-portfolio-roi">5.68x</div>
+                <div class="kpi-sub">Payback in 2.4 Months</div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" data-tab="tab-overview">
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                Executive Overview & Macro Drivers
+            </button>
+            <button class="tab-btn" data-tab="tab-rootcauses">
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                The 7 Workplace Pillars & Deep Diagnostics
+            </button>
+            <button class="tab-btn" data-tab="tab-simulator">
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                Interactive What-If Retention Simulator
+            </button>
+            <button class="tab-btn" data-tab="tab-employees">
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                At-Risk Workforce Explorer & Dossiers
+            </button>
+            <button class="tab-btn" data-tab="tab-playbook">
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Evidence-Based Retention Playbook
+            </button>
+        </div>
+
+        <!-- TAB 1: EXECUTIVE OVERVIEW -->
+        <div id="tab-overview" class="tab-content active">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Global Organizational Root Causes (Feature Attribution)</div>
+                        <span class="card-badge">XGBoost & SHAP</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="globalDriversChart"></canvas>
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px;">
+                        Identifies the strongest macroeconomic and cultural drivers forcing voluntary departures across TCS business units.
+                    </p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Turnover & Financial Loss by Business Unit</div>
+                        <span class="card-badge">7 Delivery Units</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="buAttritionChart"></canvas>
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px;">
+                        BFSI, Cloud/AI, and Retail units contribute over 63% of institutional turnover costs.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">TCS Professional Band Hierarchy Vulnerability Analysis</div>
+                    <span class="card-badge">ASE to Delivery Manager</span>
+                </div>
+                <div class="chart-container" style="height: 260px;">
+                    <canvas id="bandAttritionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Business Units Summary Table -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Business Unit Attrition Risk & Primary Root Causes</div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Business Unit</th>
+                                <th>Monitored Headcount</th>
+                                <th>Turnover Rate</th>
+                                <th>High-Risk Talent</th>
+                                <th>Replacement Loss</th>
+                                <th>Avg Overtime</th>
+                                <th>Compa-Ratio</th>
+                                <th>Dominant Root Cause</th>
+                            </tr>
+                        </thead>
+                        <tbody id="buTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: THE 7 WORKPLACE PILLARS & ROOT CAUSES -->
+        <div id="tab-rootcauses" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">The 7 Organizational Pillars of Workforce Retention</div>
+                    <span class="card-badge">Data Integration Framework</span>
+                </div>
+                <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 16px;">
+                    The AI system synthesizes telemetry across 7 organizational dimensions to pinpoint structural attrition drivers before resignation notices are tendered:
+                </p>
+                <div class="kpi-grid" id="pillarsGrid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Professional Band Breakdown & Compensation Parity</div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Band Hierarchy</th>
+                                    <th>Headcount</th>
+                                    <th>Turnover %</th>
+                                    <th>Avg CTC (LPA)</th>
+                                    <th>Compa-Ratio</th>
+                                    <th>Weekly OT</th>
+                                    <th>Stagnation</th>
+                                    <th>Loss (Cr)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bandTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Star Performer Retention Hazard (The High-Rating Trap)</div>
+                        <span class="card-badge">Critical Risk Segment</span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.6;">
+                        <p style="margin-bottom: 10px;">
+                            Empirical analysis identifies an acute vulnerability pattern termed the <b>"Star Performer Trap"</b>:
+                        </p>
+                        <div style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid var(--accent-crimson); padding: 12px; border-radius: var(--radius-sm); margin-bottom: 12px;">
+                            <b style="color: #f87171;">Observed Hazard Rate: 43.8% Attrition</b><br>
+                            Employees with Performance Rating 4 or 5 who experience <b>≥ 2.5 years without promotion</b> and have a <b>compa-ratio &lt; 0.95</b> exhibit 3.2x higher turnover hazard than baseline.
+                        </div>
+                        <p>
+                            These high-performing engineers possess high external market liquidity. When promotion cycles bottleneck and compensation lags below market benchmarks, they represent the single highest replacement and client-disruption cost to TCS accounts.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: INTERACTIVE WHAT-IF SIMULATOR -->
+        <div id="tab-simulator" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title" id="simEmpHeader">Interactive What-If Retention Scenario Simulator</div>
+                    <span class="card-badge">Real-Time Counterfactual AI</span>
+                </div>
+                <div class="simulator-layout">
+                    <!-- Controls Column -->
+                    <div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
+                            Adjust tactical intervention levers below to simulate real-time attrition risk reduction, avoided recruitment costs, and net organizational ROI for the selected employee:
+                        </p>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>1. Targeted Off-Cycle Salary Adjustment</span>
+                                <span class="slider-val" id="simHikeVal">+8%</span>
+                            </div>
+                            <input type="range" id="simHike" min="0" max="25" step="1" value="8">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>2. Workload Decompression & OT Reduction</span>
+                                <span class="slider-val" id="simOTVal">-6 hrs</span>
+                            </div>
+                            <input type="range" id="simOT" min="0" max="18" step="1" value="6">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>3. TCS Elevate Upskilling & Cloud Lab Hours</span>
+                                <span class="slider-val" id="simTrainingVal">+25 hrs</span>
+                            </div>
+                            <input type="range" id="simTraining" min="0" max="60" step="5" value="25">
+                        </div>
+
+                        <div class="toggle-group">
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.875rem;">4. Fast-Track Out-of-Cycle Promotion</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">Reset tenure-in-grade and elevate role accountability</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="simPromo" checked>
+                                <span class="slider-round"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-group">
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.875rem;">5. Executive Skip-Level & Manager Alignment</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">Assign dedicated project mentor & psychological safety reset</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="simManager" checked>
+                                <span class="slider-round"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Live Impact Column -->
+                    <div>
+                        <div class="sim-gauge-wrapper">
+                            <div class="gauge-block">
+                                <div class="kpi-label">Baseline Flight Risk</div>
+                                <div class="gauge-num high" id="simBaseGauge">84%</div>
+                                <span class="badge badge-crimson" id="simBaseCat">Critical Hazard</span>
+                            </div>
+                            <div style="font-size: 2rem; color: var(--text-dim);">&rarr;</div>
+                            <div class="gauge-block">
+                                <div class="kpi-label">Post-Intervention Risk</div>
+                                <div class="gauge-num low" id="simPostGauge">24%</div>
+                                <span class="badge badge-green" id="simPostCat">Low Risk</span>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <span class="delta-pill" id="simDeltaDrop">-60.0% Absolute Risk Reduction</span>
+                        </div>
+
+                        <div class="kpi-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 0;">
+                            <div class="kpi-card">
+                                <div class="kpi-label">Intervention Investment</div>
+                                <div class="kpi-value" style="font-size: 1.3rem;" id="simCostVal">₹1.85 L</div>
+                                <div class="kpi-sub">Salary + Training + Buffer</div>
+                            </div>
+                            <div class="kpi-card emerald">
+                                <div class="kpi-label">Avoided Turnover Cost</div>
+                                <div class="kpi-value" style="font-size: 1.3rem; color: #34d399;" id="simAvoidedVal">₹9.24 L</div>
+                                <div class="kpi-sub">Recruitment & Disruption</div>
+                            </div>
+                            <div class="kpi-card emerald">
+                                <div class="kpi-label">Net Realized Savings</div>
+                                <div class="kpi-value" style="font-size: 1.3rem; color: #34d399;" id="simNetSavingsVal">₹7.39 L</div>
+                                <div class="kpi-sub">Direct Bottom-Line Gain</div>
+                            </div>
+                            <div class="kpi-card purple">
+                                <div class="kpi-label">Simulated Intervention ROI</div>
+                                <div class="kpi-value" style="font-size: 1.3rem; color: #c084fc;" id="simRoiVal">5.0x</div>
+                                <div class="kpi-sub">Capital Efficiency Multiplier</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: AT-RISK WORKFORCE EXPLORER -->
+        <div id="tab-employees" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Identified At-Risk Workforce Registry</div>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="filterBU" class="btn btn-secondary" style="font-size: 0.8rem; padding: 6px 12px;" onchange="loadEmployeesAtRisk()">
+                            <option value="All">All Business Units</option>
+                            <option value="BFSI (Banking & Financial Services)">BFSI</option>
+                            <option value="Cloud, AI & Digital Transformation">Cloud & AI</option>
+                            <option value="Retail, CPG & Travel">Retail & CPG</option>
+                            <option value="Life Sciences & Healthcare">Life Sciences</option>
+                            <option value="HiTech & Professional Services">HiTech</option>
+                        </select>
+                        <select id="filterBand" class="btn btn-secondary" style="font-size: 0.8rem; padding: 6px 12px;" onchange="loadEmployeesAtRisk()">
+                            <option value="All">All Bands</option>
+                            <option value="Assistant System Engineer (ASE)">ASE</option>
+                            <option value="System Engineer (SE)">SE</option>
+                            <option value="IT Analyst (ITA)">IT Analyst</option>
+                            <option value="Assistant Consultant (AST)">AST</option>
+                            <option value="Associate Consultant (CON)">Consultant</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Emp ID</th>
+                                <th>Name</th>
+                                <th>Business Unit</th>
+                                <th>Band</th>
+                                <th>CTC</th>
+                                <th>Compa</th>
+                                <th>Weekly OT</th>
+                                <th>Tenure in Grade</th>
+                                <th>Flight Hazard</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeeTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: RETENTION PLAYBOOK -->
+        <div id="tab-playbook" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">TCS Institutional Retention Interventions Matrix</div>
+                    <span class="card-badge">C-Suite Human Capital Strategy</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Intervention Strategy</th>
+                                <th>Pillar Addressed</th>
+                                <th>Target Vulnerability Cohort</th>
+                                <th>Action SLA</th>
+                                <th>Est. Cost % CTC</th>
+                                <th>Avg Risk Drop</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight: 700; color: var(--accent-cyan);">Workload Decompression & Hard OT Cap</td>
+                                <td>Overtime & Burnout</td>
+                                <td>Employees logging &gt;8 hrs OT or &gt;6 weekend shifts</td>
+                                <td>7 Days</td>
+                                <td>3.0%</td>
+                                <td><span class="badge badge-green">-32.0%</span></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 700; color: var(--accent-cyan);">Off-Cycle Market Parity Calibration</td>
+                                <td>Compensation Equity</td>
+                                <td>Compa-Ratio &lt; 0.85 &amp; Performance Rating ≥ 3</td>
+                                <td>14 Days</td>
+                                <td>10.0%</td>
+                                <td><span class="badge badge-green">-28.5%</span></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 700; color: var(--accent-cyan);">Fast-Track Band Elevation Committee</td>
+                                <td>Career Progression</td>
+                                <td>Star Performers (Rating 4/5) with ≥ 2.5 yrs in grade</td>
+                                <td>30 Days</td>
+                                <td>7.0%</td>
+                                <td><span class="badge badge-green">-35.0%</span></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 700; color: var(--accent-cyan);">TCS Elevate AI/Cloud Certification Sponsorship</td>
+                                <td>Skill Architecture</td>
+                                <td>Engineers locked in legacy maintenance codebases</td>
+                                <td>21 Days</td>
+                                <td>2.5%</td>
+                                <td><span class="badge badge-green">-24.0%</span></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 700; color: var(--accent-cyan);">Skip-Level Sponsorship & Manager Coaching</td>
+                                <td>Leadership & Culture</td>
+                                <td>Employees with Manager Score &le; 2.4 or rejected IJPs</td>
+                                <td>10 Days</td>
+                                <td>1.5%</td>
+                                <td><span class="badge badge-green">-22.0%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Institutional Financial Impact (15,000 Cohort)</div>
+                    </div>
+                    <div style="font-size: 0.9rem; color: #cbd5e1; line-height: 1.8;">
+                        <ul style="padding-left: 20px;">
+                            <li><b>Workforce Exposure:</b> 2,740 professionals currently sit in the High-Risk flight zone.</li>
+                            <li><b>Turnover Capital Exposure:</b> ₹245.8 Crores in replacement, onboarding, and billing disruption.</li>
+                            <li><b>Intervention Budget Required:</b> ₹43.2 Crores across salary corrections, training vouchers, and capacity buffer.</li>
+                            <li><b>Net Direct Bottom-Line Savings:</b> <b style="color: #34d399;">₹186.4 Crores</b> realized.</li>
+                            <li><b>Institutional Capital Efficiency:</b> <b style="color: var(--accent-cyan);">5.68x Return</b> on invested retention funds.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">90-Day Implementation & Governance Roadmap</div>
+                    </div>
+                    <div style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.6;">
+                        <div style="margin-bottom: 10px;">
+                            <b style="color: var(--accent-cyan);">Days 1 – 15: Urgent Workload & Burnout Relief</b><br>
+                            Enforce immediate overtime ceilings across BFSI & Retail delivery units; mandate compensatory offs.
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <b style="color: var(--accent-cyan);">Days 16 – 45: Compensation Calibration & Star Promotion</b><br>
+                            Deliver off-cycle salary corrections for under-parity star performers; convene expedited band review boards.
+                        </div>
+                        <div>
+                            <b style="color: var(--accent-cyan);">Days 46 – 90: TCS Elevate Digital Mobility & IJP Fast-Track</b><br>
+                            Distribute sponsored cloud vouchers and transition 800+ legacy engineers into Cloud/GenAI accounts.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- INDIVIDUAL EMPLOYEE DOSSIER MODAL -->
+        <div class="modal-overlay" id="employeeModal">
+            <div class="modal-box">
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+                <div style="margin-bottom: 20px;">
+                    <h2 id="modalEmpName" style="font-size: 1.3rem; margin-bottom: 4px;">Employee Name (ID)</h2>
+                    <div id="modalEmpMeta" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Band | Unit | CTC</div>
+                    <span class="badge" id="modalRiskBadge">High Risk</span>
+                </div>
+
+                <!-- 7-Pillar Spider Chart -->
+                <div class="card" style="padding: 16px; margin-bottom: 20px;">
+                    <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: var(--text-main);">
+                        7-Pillar Operational Strain Radar
+                    </div>
+                    <div class="chart-container" style="height: 240px;">
+                        <canvas id="employeeRadarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Diagnosed Triggers -->
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; color: #f87171;">
+                        Diagnosed Operational Root Causes
+                    </div>
+                    <div id="modalTriggers"></div>
+                </div>
+
+                <!-- Prescriptions -->
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; color: #34d399;">
+                        Evidence-Based Prescriptive Retention Action Plan
+                    </div>
+                    <div id="modalPrescriptions"></div>
+                </div>
+
+                <!-- Financial ROI -->
+                <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 0;">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Avoided Cost</div>
+                        <div class="kpi-value" style="font-size: 1.2rem; color: #34d399;" id="modalGrossSavings">₹0 L</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Plan Cost</div>
+                        <div class="kpi-value" style="font-size: 1.2rem;" id="modalInterventionCost">₹0 L</div>
+                    </div>
+                    <div class="kpi-card emerald">
+                        <div class="kpi-label">Net Realized</div>
+                        <div class="kpi-value" style="font-size: 1.2rem; color: #34d399;" id="modalNetSavings">₹0 L</div>
+                    </div>
+                    <div class="kpi-card purple">
+                        <div class="kpi-label">ROI Multiplier</div>
+                        <div class="kpi-value" style="font-size: 1.2rem; color: #c084fc;" id="modalRoiMultiplier">0x</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
+
